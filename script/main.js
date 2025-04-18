@@ -129,7 +129,7 @@ function displaySuggestions(suggestions) {
 export function viewAllMovies(category) {
   window.location.href = `./all/?category=${category}`;
   searchInput.value = "";
-  searchInput.focus();
+  //searchInput.focus();
 }
 
 // DOM Events
