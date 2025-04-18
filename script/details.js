@@ -48,7 +48,7 @@ function displayMovieDetails(movie, encryptedLink) {
   const backdrop = movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : 'https://via.placeholder.com/1920x800?text=No+Image'; // Fallback if backdrop is missing
 
   // Get top 5 cast, ensuring there's a fallback if the cast list is empty
-  const topCast = movie.credits?.cast?.slice(0, 3) || [];
+  const topCast = movie.credits?.cast?.slice(0, 5) || [];
   const downloadButton = encryptedLink!== ""
     ? ` <a href="../download-movie/?id=${movie.id}&key=${encodeURIComponent(encryptedLink)}" target="_blank" class="download-button">
         <i class="fa fa-download"></i> Download
@@ -134,7 +134,7 @@ function displaySimilarMovies(movies) {
         <button class="slider-btn left" onclick="scrollSlider('left')">&#10094;</button>
         <div class="similar-slider">
           ${movies.filter(movie => movie.poster_path)
-            .slice(0, 30)
+            .slice(0, 15)
             .map(movie => {
               const posterUrl = movie.poster_path
                 ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
