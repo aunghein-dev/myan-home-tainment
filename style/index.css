@@ -293,7 +293,7 @@ footer p {
 }
 
 .similar-movie-item {
-  min-width: 220px;
+  max-width: 150px;
   background-color: #1c1c1c;
   border-radius: 10px;
   overflow: hidden;
