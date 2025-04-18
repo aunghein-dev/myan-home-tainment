@@ -343,7 +343,7 @@ footer p {
 
 .cast-list {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   flex-wrap: wrap;
 }
 
@@ -351,6 +351,7 @@ footer p {
   width: 120px;
   text-align: center;
   font-size: 0.9rem;
+  max-height: 180px;
 }
 
 .cast-item img {
