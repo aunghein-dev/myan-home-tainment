@@ -94,7 +94,7 @@ function displayMovieDetails(movie, encryptedLink) {
               <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
                 <img style="margin-bottom:-6px;" src="${profileImg}" alt="${actor.name}" />
                 <p style="margin:0;">${actor.name}</p>
-                <small style="margin:0; margin-top:-10px;">as ${actor.character}</small>
+                <small style="margin:0; margin-top:-24px; margin-bottom:8px;">as ${actor.character}</small>
               </div>
             `;
           }).join('')}
