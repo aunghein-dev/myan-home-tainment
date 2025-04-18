@@ -134,7 +134,7 @@ function displaySimilarMovies(movies) {
         <button class="slider-btn left" onclick="scrollSlider('left')">&#10094;</button>
         <div class="similar-slider">
           ${movies.filter(movie => movie.poster_path)
-            .slice(0, 15)
+            .slice(0, 10)
             .map(movie => {
               const posterUrl = movie.poster_path
                 ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
