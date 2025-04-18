@@ -114,7 +114,7 @@ function displaySuggestions(suggestions) {
       suggestionItem.onclick = () => {
         window.location.href = `./detail/?id=${movie.id}`;
         searchInput.value = "";
-        searchInput.focus();
+        //searchInput.focus();
       };
 
       suggestionsContainer.appendChild(suggestionItem);
