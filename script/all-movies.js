@@ -53,7 +53,7 @@ function hideLoading() {
   loadingElement.style.display = 'none';
 }
 
-async function fetchMovies(category, totalPages = 5) {
+async function fetchMovies(category, totalPages = 3) {
   showLoading();
   try {
     let allMovies = [];
