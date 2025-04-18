@@ -56,7 +56,7 @@ function displayMovies(movies, containerId) {
     movieItem.onclick = () => {
       window.location.href = `./detail/?id=${movie.id}`;
       searchInput.value = "";
-      searchInput.focus();
+      //searchInput.focus();
     };
     gallery.appendChild(movieItem);
   });
