@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.png" />
+    <title>All Movies</title>
+    <link rel="stylesheet" href="../style/index.css" />
+    <link rel="stylesheet" href="../style/sidebar.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <script>
+      window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+
+    <header class="all-movies-header">
+      <button class="back-button" onclick="window.history.back()">
+        <i class="fas fa-chevron-left"></i> Back
+      </button>
+
+      <img class="logo-img" src="../images/logo.png" />
+    </header>
+
+    <div id="loading" class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+
+    <main>
+      <section>
+        <h2 id="category-title"></h2>
+        <div id="movie-gallery" class="movie-gallery"></div>
+      </section>
+    </main>
+    <button id="backToTopBtn" title="Back to Top">
+      <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <footer>
+      <div class="container-footer">
+        <p>
+          © 2025 <strong>myanFlix</strong> | Built with
+          <i
+            class="fas fa-heart"
+            style="color: #e63946; vertical-align: middle"
+          ></i>
+          by <strong>MiniDev Tech Community</strong>
+        </p>
+      </div>
+    </footer>
+
+    <script type="module" src="../script/all-movies.js"></script>
+    <script>
+      const backToTopBtn = document.getElementById("backToTopBtn");
+
+      window.onscroll = () => {
+        if (
+          document.body.scrollTop > 300 ||
+          document.documentElement.scrollTop > 300
+        ) {
+          backToTopBtn.style.display = "block";
+        } else {
+          backToTopBtn.style.display = "none";
+        }
+      };
+
+      backToTopBtn.onclick = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+    </script>
+  </body>
+</html>

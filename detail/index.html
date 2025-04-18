@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.png" />
+    <title>Movie Details</title>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../style/index.css" />
+    <link rel="stylesheet" href="../style/sidebar.css" />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <script>
+      window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+
+    <header class="detail-header">
+      <div class="detail-header-container">
+        <button class="back-button" onclick="window.history.back()">
+          <i class="fas fa-chevron-left"></i> Back
+        </button>
+
+        <h1>Movie Details</h1>
+      </div>
+    </header>
+
+    <div id="loading" class="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+    <main style="min-height: 700px; margin-top: -40px">
+      <div id="movie-details" class="movie-details"></div>
+    </main>
+    <button id="backToTopBtn" title="Back to Top">
+      <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <footer>
+      <div class="container-footer">
+        <p>
+          © 2025 <strong>myanFlix</strong> | Built with
+          <i
+            class="fas fa-heart"
+            style="color: #e63946; vertical-align: middle"
+          ></i>
+          by <strong>MiniDev Tech Community</strong>
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="../script/details.js"></script>
+    <script>
+      function checkFavorite(id) {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        return favorites.some((movie) => movie.id === id);
+      }
+
+      function toggleFavorite(id, title, poster) {
+        const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+        const existingIndex = favorites.findIndex((movie) => movie.id === id);
+        const button = document.querySelector(".favorites-button");
+
+        if (existingIndex > -1) {
+          favorites.splice(existingIndex, 1);
+          localStorage.setItem("favorites", JSON.stringify(favorites));
+          if (button) {
+            button.classList.remove("starred");
+            button.innerHTML = `<i class="fas fa-star"></i> Add to Favorites`;
+          }
+        } else {
+          favorites.push({ id, title, poster });
+          localStorage.setItem("favorites", JSON.stringify(favorites));
+          if (button) {
+            button.classList.add("starred");
+            button.innerHTML = `<i class="fas fa-star"></i> Favorited`;
+          }
+        }
+      }
+
+      const backToTopBtn = document.getElementById("backToTopBtn");
+
+      window.onscroll = () => {
+        if (
+          document.body.scrollTop > 300 ||
+          document.documentElement.scrollTop > 300
+        ) {
+          backToTopBtn.style.display = "block";
+        } else {
+          backToTopBtn.style.display = "none";
+        }
+      };
+
+      backToTopBtn.onclick = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      };
+    </script>
+  </body>
+</html>

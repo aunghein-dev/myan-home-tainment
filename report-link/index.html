@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.png" />
+    <title>Report Link Broken</title>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../style/index.css" />
+    <link rel="stylesheet" href="../style/sidebar.css" />
+    <link rel="stylesheet" href="../style/report.css" />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+
+  <body>
+    <script>
+      window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+
+    <header class="detail-header">
+      <div class="detail-header-container">
+        <button class="back-button" onclick="goBack()">
+          <i class="fas fa-chevron-left"></i> Back
+        </button>
+
+        <h1>Report Link Broken</h1>
+      </div>
+    </header>
+
+    <main style="min-height: calc(100vh - 120px); text-align: center">
+      <div class="report-container">
+        <h2>Let us know what's wrong</h2>
+        <form id="reportForm">
+          <div class="form-group">
+            <label for="movieTitle">Movie/TV Title</label>
+            <input type="text" id="movieTitle" name="movieTitle" required />
+          </div>
+          <div class="form-group">
+            <label for="brokenLink">Broken Link URL</label>
+            <input type="url" id="brokenLink" name="brokenLink" required />
+          </div>
+          <div class="form-group">
+            <label for="description">What happened?</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              placeholder="Describe the issue in detail..."
+              required
+            ></textarea>
+          </div>
+          <button class="submit-button" type="submit">
+            <i class="fas fa-paper-plane"></i> Submit Report
+          </button>
+        </form>
+      </div>
+    </main>
+
+    <!-- Notification Popup -->
+    <div id="notification" class="notification">
+      <p>Report submitted successfully!</p>
+    </div>
+
+    <footer>
+      <div class="container-footer">
+        <p>
+          © 2025 <strong>myanFlix</strong> | Built with
+          <i
+            class="fas fa-heart"
+            style="color: #e63946; vertical-align: middle"
+          ></i>
+          by <strong>MiniDev Tech Community</strong>
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      function goBack() {
+        // If there's history to go back to, do it:
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          // Otherwise jump to the root of *this* origin:
+          window.location.href = window.location.origin + "/";
+        }
+      }
+    </script>
+    <script src="../script/report-link.js"></script>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="../favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="../favicon.png" />
+    <title>Movie Downloader</title>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="../style/index.css" />
+    <link rel="stylesheet" href="../style/sidebar.css" />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <style>
+      .download-button {
+        display: inline-block;
+        padding: 12px 24px;
+        background-color: #ff3c3c;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 18px;
+        transition: background-color 0.3s ease;
+      }
+
+      .download-button:hover {
+        background-color: #d62c2c;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script>
+      window.onbeforeunload = function () {
+        window.scrollTo(0, 0);
+      };
+    </script>
+
+    <header class="detail-header">
+      <div class="detail-header-container">
+        <h1>🎬 Download Movie</h1>
+      </div>
+    </header>
+
+    <main style="min-height: 700px; margin-top: -32px; text-align: center">
+      <div id="movie-details" class="movie-details"></div>
+
+      <h2 id="countdown-message">
+        ⏳ Preparing download in <span id="countdown">10</span> seconds...
+      </h2>
+
+      <a
+        id="downloadBtn"
+        class="download-button"
+        href="#"
+        target="_blank"
+        style="display: none; margin-top: 20px"
+      >
+        🎬 Click here to Download
+      </a>
+    </main>
+
+    <footer>
+      <div class="container-footer">
+        <p>
+          © 2025 <strong>myanFlix</strong> | Built with
+          <i
+            class="fas fa-heart"
+            style="color: #e63946; vertical-align: middle"
+          ></i>
+          by <strong>MiniDev Tech Community</strong>
+        </p>
+      </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="../script/decrypt-and-redirect.js"></script>
+    <script src="../script/downloader-page.js"></script>
+  </body>
+</html>

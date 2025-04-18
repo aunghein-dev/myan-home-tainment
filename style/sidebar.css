@@ -1,0 +1,227 @@
+
+/* Sidebar Styles */
+.sidebar {
+  position: fixed;
+  top: -10px;
+  left: 0;
+  height: 100%;
+  width: 55px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-top: 1rem;
+  padding-right: 10px;
+  overflow-x: hidden;
+  transition: width 0.3s ease, transform 0.3s ease;
+  z-index: 9999;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  transform: translateX(0);
+}
+
+/* Hidden by default on mobile */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  .hero h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+    max-width: 600px;
+  }
+}
+
+/* Sidebar logo */
+.sidebar-logo {
+  font-size: 1.8rem;
+  color: #e50914;
+  font-weight: bold;
+  margin: 0 0 2rem 1rem;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Nav links */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  padding-left: 0.75rem;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar-nav a:hover {
+  background-color: #e50914;
+  color: #fff;
+  transform: translateX(5px);
+}
+
+.sidebar-nav a i {
+  font-size: 1.4rem;
+  color: #e50914;
+  min-width: 24px;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.sidebar-nav a:hover i {
+  color: #fff;
+}
+
+.sidebar-nav a span {
+  margin-left: 1rem;
+  font-size: 0.95rem;
+  opacity: 0;
+  white-space: nowrap;
+  transition: opacity 0.3s ease;
+}
+
+/* Hover expand effect for desktop */
+.sidebar:hover {
+  width: 200px;
+}
+
+
+
+.sidebar:hover .sidebar-logo,
+.sidebar:hover .sidebar-nav a span {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+
+/* Main content push */
+.main-content {
+  margin-left: 60px;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar:hover + .main-content {
+  margin-left: 200px;
+}
+
+/* Default margin-left for .main-content */
+.main-content {
+  margin-left: 60px; /* Default margin when sidebar is expanded */
+  transition: margin-left 0.3s ease;
+}
+
+/* Mobile view */
+@media (max-width: 500px) {
+  .sidebar {
+    width: 55px;
+  }
+
+  .sidebar:hover {
+    width: 188px;
+  }
+
+  /* Remove margin-left when sidebar is collapsed on mobile */
+  .main-content {
+    margin-left: 0; /* Reset margin-left for mobile view */
+  }
+
+  .sidebar:hover + .main-content {
+    margin-left: 188px; /* Adjust margin-left when sidebar is expanded */
+  }
+}
+
+/* Sidebar hover effect on desktop */
+.sidebar:hover + .main-content {
+  margin-left: 200px; /* Adjust margin-left for desktop when sidebar is hovered */
+}
+
+/* Mobile view for collapsing sidebar */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+
+  /* Remove margin-left on mobile */
+  .main-content {
+    margin-left: 0;
+  }
+
+  .sidebar:hover + .main-content {
+    margin-left: 0; /* No margin-left when sidebar is collapsed */
+  }
+}
+
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-img{
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  height: 50px;
+  width: 155px;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+
+/* Large logo (on hover) */
+.logo1-img {
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.9);
+
+}
+
+/* Small default logo */
+.logo2-img {
+  height: 148px;
+  width: 148px;
+  opacity: 1;
+  transform: scale(1);
+  margin-left: -12px;
+}
+
+/* Smooth hover switch */
+.sidebar:hover .logo1-img {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.sidebar:hover .logo2-img {
+  opacity: 0;
+  transform: scale(0.9);
+}
