@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       movieCard.innerHTML = `
         <a href="../detail/?id=${movie.id}" class="movie-link">
-          <img class="movie-image" style="max-height:150px;" src="${imageUrl}" alt="${data.title}"
+          <img class="movie-image" style="max-height:200px;" src="${imageUrl}" alt="${data.title}"
             onerror="this.onerror=null;this.src='https://placehold.co/300x450?text=No+Image&font=roboto';" />
             <div class="movie-info">
             <h4>
