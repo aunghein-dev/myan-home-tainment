@@ -92,9 +92,9 @@ function displayMovieDetails(movie, encryptedLink) {
             const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`; // Redirect to Google search
             return `
               <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
-                <img style="margin-bottom:-6px;" src="${profileImg}" alt="${actor.name}" />
-                <p style="margin:0; margin-bottom:-6px;">${actor.name}</p>
-                <small style="margin:0; margin-bottom:8px;">as ${actor.character}</small>
+                <img style="margin-bottom:-2px;" src="${profileImg}" alt="${actor.name}" />
+                <p style="margin:0; margin-bottom:-2px;">${actor.name}</p>
+                <small style="margin:0; margin-bottom: 14px;">as ${actor.character}</small>
               </div>
             `;
           }).join('')}

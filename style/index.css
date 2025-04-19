@@ -352,15 +352,17 @@ footer p {
   width: 120px;
   text-align: center;
   font-size: 0.9rem;
-  max-height: 180px;
+  max-height: 160px;
+  margin-top: -6px;
+  margin-bottom: 14px;
 }
 
 .cast-item img {
   width: 100%;
   border-radius: 8px;
   object-fit: cover;
-  object-item: center;
-  max-height: 150px;
+  object-position: center;
+  max-height: 140px;
 }
 
 
