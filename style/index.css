@@ -419,7 +419,6 @@ footer p {
 }
 
 
-
 /* Back Button Style */
 .back-button {
   position: absolute;
@@ -429,7 +428,7 @@ footer p {
   border: none;
   color: white;
   font-size: 1rem;
-  padding: 10px 22px;
+  padding: 10px 14px;
   border-radius: 30px;
   cursor: pointer;
   font-weight: bold;
@@ -471,9 +470,6 @@ header {
 }
 
 .detail-header,.all-movies-header{
-  padding: 0;
-  padding-top: 14px;
-  padding-bottom: 14px;
   display: flex;
   justify-content: center;
   margin-left: -10px;
@@ -575,6 +571,7 @@ header {
     display: block;
     margin-left: 5rem;  /* This should force the margin on mobile */
   }
+
 }
 
 
@@ -582,6 +579,10 @@ header {
   .menu-toggle {
     display: block;
     margin-left: 6rem;  /* This should force the margin on mobile */
+  }
+
+  .back-button {
+    left: 0.7rem;
   }
 }
 
@@ -754,7 +755,7 @@ header {
   background-color: #e50914;
   color: white;
   border: none;
-  padding: 14px;
+  padding: 14px 16px;
   border-radius: 50%;
   font-size: 20px;
   cursor: pointer;

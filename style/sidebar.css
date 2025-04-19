@@ -23,7 +23,7 @@
 /* Hidden by default on mobile */
 @media (max-width: 768px) {
   .sidebar.active {
-    width: 188px;
+    width: 200px;
   }
 
   .sidebar.active .sidebar-logo,
@@ -147,7 +147,7 @@
   }
 
   .sidebar:hover {
-    width: 188px;
+    width: 200px;
   }
 
   /* Remove margin-left when sidebar is collapsed on mobile */
@@ -156,7 +156,7 @@
   }
 
   .sidebar:hover + .main-content {
-    margin-left: 188px; /* Adjust margin-left when sidebar is expanded */
+    margin-left: 200px; /* Adjust margin-left when sidebar is expanded */
   }
 }
 
