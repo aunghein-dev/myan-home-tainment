@@ -504,7 +504,7 @@ header {
 #search-input {
   position: relative;
   flex: 1;  /* Allow the input to grow and shrink */
-  margin-left: 10px;
+  margin-left: 30px;
   padding-left: 45px;
   padding-top: 14px;
   padding-bottom: 14px;
