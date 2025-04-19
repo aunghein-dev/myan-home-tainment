@@ -1,5 +1,5 @@
 
-
+/*
 const apiKey = '7118c5c252a5889d193fbee22d905462';
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id');
@@ -201,6 +201,196 @@ if (movieId) {
   fetchMovieDetails(movieId).then(() => {
     fetchSimilarMovies(movieId);
     hideLoading();
+  });
+}
+*/
+
+
+const apiKey = '7118c5c252a5889d193fbee22d905462';
+const urlParams = new URLSearchParams(window.location.search);
+const movieId = urlParams.get('id');
+const secretKey = 'p4E!x9z@1Lk#Vm$2RfT8GwQe^YhUjIoP';
+
+const loadingElement = document.getElementById('loading');
+const movieDetailsContainer = document.getElementById('movie-details');
+
+function showLoading() {
+  loadingElement.style.display = 'flex';
+  movieDetailsContainer.style.display = 'none';
+}
+
+function hideLoading() {
+  loadingElement.style.display = 'none';
+  movieDetailsContainer.style.display = 'block';
+}
+
+async function fetchMovieDetails(id) {
+  const movieUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`;
+  const downloadApiUrl = `https://mvlink-backend-webservice.onrender.com/mapi/secure-movie/${id}`;
+
+  try {
+    const res = await fetch(movieUrl);
+    const movie = await res.json();
+
+    let encryptedLink = '';
+    try {
+      const backendRes = await Promise.race([
+        fetch(downloadApiUrl),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Backend timeout")), 5000))
+      ]);
+
+      if (backendRes.ok) {
+        const backendData = await backendRes.json();
+        encryptedLink = backendData.safeLink || '';
+      } else {
+        console.warn(`No backend data for movie ${id} (Status: ${backendRes.status})`);
+      }
+    } catch (err) {
+      console.warn('Secure link fetch failed or timed out:', err.message);
+    }
+
+    displayMovieDetails(movie, encryptedLink);
+    return movie;
+  } catch (error) {
+    console.error('Error loading movie details:', error);
+    document.getElementById('movie-details').innerHTML = `
+      <div class="error-message">
+        <h3>Unable to load movie data.</h3>
+        <p>Try again later or check another title.</p>
+      </div>
+    `;
+  }
+}
+
+function displayMovieDetails(movie, encryptedLink) {
+  const container = document.getElementById('movie-details');
+  const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+  const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
+  const backdrop = movie.backdrop_path ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` : 'https://via.placeholder.com/1920x800?text=No+Image';
+
+  const topCast = movie.credits?.cast?.slice(0, 5) || [];
+  const downloadButton = encryptedLink !== ""
+    ? `<a href="../download-movie/?id=${movie.id}&key=${encodeURIComponent(encryptedLink)}" target="_blank" class="download-button">
+        <i class="fa fa-download"></i> Download
+      </a>`
+    : `<a href="/report-link/?id=${movie.id}" class="download-button">
+        <i class="fa fa-download"></i> Request Movie
+      </a>`;
+
+  const isFavorite = checkFavorite(movie.id);
+  const favoritesButton = `
+    <button class="favorites-button ${isFavorite ? 'starred' : ''}" onclick="toggleFavorite(${movie.id}, '${movie.title.replace(/'/g, "\\'")}', '${movie.poster_path}')">
+      <i class="fas fa-star"></i> ${isFavorite ? 'Favorited' : 'Add to Favorites'}
+    </button>`;
+
+  container.innerHTML = `
+    <div class="movie-content">
+      <img src="${poster}" alt="${movie.title}" class="movie-poster" loading="lazy" />
+      <div class="movie-text">
+        <h2>${movie.title}</h2>
+        <p><strong>Release Date:</strong> ${movie.release_date}</p>
+        <p><strong>IMDb Rating:</strong> ⭐ ${rating}</p>
+        <p><strong>Genres:</strong> ${movie.genres?.map(g => g.name).join(', ') || 'N/A'}</p>
+        <p><strong>Overview:</strong> ${movie.overview || 'No overview available'}</p>
+        <p><strong>IMDb:</strong> <a href="https://www.imdb.com/title/${movie.imdb_id}" target="_blank" class="imdb-link">View on IMDb</a></p>
+        <p>${downloadButton} ${favoritesButton}</p>
+      </div>
+    </div>
+
+    <div class="cast-section">
+      <h3>Top Cast</h3>
+      <div class="cast-list">
+        ${topCast.map(actor => {
+          const profileImg = actor.profile_path
+            ? `https://image.tmdb.org/t/p/w154${actor.profile_path}`
+            : 'https://via.placeholder.com/185x278?text=No+Image';
+          const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`;
+          return `
+            <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
+              <img style="margin-bottom: 6px;" src="${profileImg}" alt="${actor.name}" loading="lazy" />
+              <p style="margin: 0; margin-bottom: 3px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">
+                ${actor.name}
+              </p>
+              <small>as ${actor.character}</small>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function fetchSimilarMovies(id) {
+  const similarUrl = `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}`;
+
+  try {
+    const res = await fetch(similarUrl);
+    const data = await res.json();
+    displaySimilarMovies(data.results);
+  } catch (err) {
+    console.error('Error fetching similar movies:', err);
+  }
+}
+
+function displaySimilarMovies(movies) {
+  const container = document.getElementById('movie-details');
+  const similarSection = document.createElement('div');
+  similarSection.classList.add('similar-section');
+
+  if (movies.length === 0) {
+    similarSection.innerHTML = `
+      <h3 class="section-title">More Like This</h3>
+      <p>No similar movies found.</p>
+    `;
+  } else {
+    similarSection.innerHTML = `
+      <h3 class="section-title">More Like This</h3>
+      <div class="slider-container">
+        <button class="slider-btn left" onclick="scrollSlider('left')">&#10094;</button>
+        <div class="similar-slider">
+          ${movies.filter(movie => movie.poster_path)
+            .slice(0, 10)
+            .map(movie => {
+              const posterUrl = `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
+              return `
+                <div class="similar-movie-item" onclick="location.href='./?id=${movie.id}'">
+                  <img src="${posterUrl}" alt="${movie.title}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Image';">
+                  <div class="similar-movie-info">
+                    <h4>
+                      <span class="movie-title-text">${movie.title}</span>
+                      <span class="span-info-year">(${new Date(movie.release_date).getFullYear()})</span>
+                    </h4>
+                    <p class="similar-movie-info-star">⭐ ${movie.vote_average.toFixed(1)}</p>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+        </div>
+        <button class="slider-btn right" onclick="scrollSlider('right')">&#10095;</button>
+      </div>
+    `;
+  }
+
+  container.appendChild(similarSection);
+}
+
+function scrollSlider(direction) {
+  const slider = document.querySelector('.similar-slider');
+  const scrollAmount = 300;
+  slider.scrollBy({
+    left: direction === 'left' ? -scrollAmount : scrollAmount,
+    behavior: 'smooth'
+  });
+}
+
+// 🔄 Load both movie and similar movies in parallel
+if (movieId) {
+  showLoading();
+  Promise.all([
+    fetchMovieDetails(movieId),
+    fetchSimilarMovies(movieId)
+  ]).finally(() => {
+    setTimeout(hideLoading, 300); // small delay for smoother transition
   });
 }
 
