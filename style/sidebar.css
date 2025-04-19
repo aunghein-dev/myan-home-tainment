@@ -22,13 +22,22 @@
 
 /* Hidden by default on mobile */
 @media (max-width: 768px) {
-  .sidebar {
-    transform: translateX(-100%);
+  .sidebar.active {
+    width: 188px;
   }
 
-  .sidebar.active {
-    transform: translateX(0);
+  .sidebar.active .sidebar-logo,
+  .sidebar.active .sidebar-nav a span,
+  .sidebar.active .logo1-img {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
+
+  .sidebar.active .logo2-img {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
 
   .hero h2 {
     font-size: 1.8rem;
@@ -39,6 +48,8 @@
     font-size: 1rem;
     max-width: 600px;
   }
+
+
 }
 
 /* Sidebar logo */

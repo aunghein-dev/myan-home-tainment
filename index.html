@@ -127,6 +127,16 @@
     </div>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (window.innerWidth <= 768) {
+          document
+            .querySelectorAll(".sidebar-nav")
+            .forEach((el) => el.classList.add("hover"));
+        }
+      });
+    </script>
+
+    <script>
       const toggleBtn = document.getElementById("sidebarToggle");
       const sidebar = document.getElementById("sidebar");
 
