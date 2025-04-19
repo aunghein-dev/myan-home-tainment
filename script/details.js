@@ -206,14 +206,18 @@ if (movieId) {
 */
 
 
+
+
 const apiKey = '7118c5c252a5889d193fbee22d905462';
 const urlParams = new URLSearchParams(window.location.search);
 const movieId = urlParams.get('id');
 const secretKey = 'p4E!x9z@1Lk#Vm$2RfT8GwQe^YhUjIoP';
 
+// Element references
 const loadingElement = document.getElementById('loading');
 const movieDetailsContainer = document.getElementById('movie-details');
 
+// Show and hide loading state
 function showLoading() {
   loadingElement.style.display = 'flex';
   movieDetailsContainer.style.display = 'none';
@@ -224,29 +228,34 @@ function hideLoading() {
   movieDetailsContainer.style.display = 'block';
 }
 
+// Fetch movie details and backend data
+function fetchWithTimeout(url, options = {}, timeout = 5000) {
+  return Promise.race([
+    fetch(url, options),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timed out")), timeout)
+    ),
+  ]);
+}
+
 async function fetchMovieDetails(id) {
   const movieUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`;
   const downloadApiUrl = `https://mvlink-backend-webservice.onrender.com/mapi/secure-movie/${id}`;
 
   try {
-    const res = await fetch(movieUrl);
+    const res = await fetchWithTimeout(movieUrl);
     const movie = await res.json();
-
     let encryptedLink = '';
     try {
-      const backendRes = await Promise.race([
-        fetch(downloadApiUrl),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Backend timeout")), 5000))
-      ]);
-
+      const backendRes = await fetchWithTimeout(downloadApiUrl);
       if (backendRes.ok) {
         const backendData = await backendRes.json();
         encryptedLink = backendData.safeLink || '';
       } else {
-        console.warn(`No backend data for movie ${id} (Status: ${backendRes.status})`);
+        console.warn(`No backend data found for movie ${id} (Status: ${backendRes.status})`);
       }
-    } catch (err) {
-      console.warn('Secure link fetch failed or timed out:', err.message);
+    } catch (backendErr) {
+      console.error('Error fetching backend movie link:', backendErr);
     }
 
     displayMovieDetails(movie, encryptedLink);
@@ -262,20 +271,16 @@ async function fetchMovieDetails(id) {
   }
 }
 
+// Display movie details in the UI
 function displayMovieDetails(movie, encryptedLink) {
-  const container = document.getElementById('movie-details');
   const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
   const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
-  const backdrop = movie.backdrop_path ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` : 'https://via.placeholder.com/1920x800?text=No+Image';
+  const backdrop = movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : 'https://via.placeholder.com/1920x800?text=No+Image';
 
   const topCast = movie.credits?.cast?.slice(0, 5) || [];
-  const downloadButton = encryptedLink !== ""
-    ? `<a href="../download-movie/?id=${movie.id}&key=${encodeURIComponent(encryptedLink)}" target="_blank" class="download-button">
-        <i class="fa fa-download"></i> Download
-      </a>`
-    : `<a href="/report-link/?id=${movie.id}" class="download-button">
-        <i class="fa fa-download"></i> Request Movie
-      </a>`;
+  const downloadButton = encryptedLink
+    ? `<a href="../download-movie/?id=${movie.id}&key=${encodeURIComponent(encryptedLink)}" target="_blank" class="download-button"><i class="fa fa-download"></i> Download</a>`
+    : `<a href="/report-link/?id=${movie.id}" class="download-button"><i class="fa fa-download"></i> Request Movie</a>`;
 
   const isFavorite = checkFavorite(movie.id);
   const favoritesButton = `
@@ -283,7 +288,8 @@ function displayMovieDetails(movie, encryptedLink) {
       <i class="fas fa-star"></i> ${isFavorite ? 'Favorited' : 'Add to Favorites'}
     </button>`;
 
-  container.innerHTML = `
+  // Update the movie details container
+  movieDetailsContainer.innerHTML = `
     <div class="movie-content">
       <img src="${poster}" alt="${movie.title}" class="movie-poster" loading="lazy" />
       <div class="movie-text">
@@ -293,7 +299,10 @@ function displayMovieDetails(movie, encryptedLink) {
         <p><strong>Genres:</strong> ${movie.genres?.map(g => g.name).join(', ') || 'N/A'}</p>
         <p><strong>Overview:</strong> ${movie.overview || 'No overview available'}</p>
         <p><strong>IMDb:</strong> <a href="https://www.imdb.com/title/${movie.imdb_id}" target="_blank" class="imdb-link">View on IMDb</a></p>
-        <p>${downloadButton} ${favoritesButton}</p>
+        <p>
+          ${downloadButton}
+          ${favoritesButton}
+        </p>
       </div>
     </div>
 
@@ -301,28 +310,63 @@ function displayMovieDetails(movie, encryptedLink) {
       <h3>Top Cast</h3>
       <div class="cast-list">
         ${topCast.map(actor => {
-          const profileImg = actor.profile_path
-            ? `https://image.tmdb.org/t/p/w154${actor.profile_path}`
-            : 'https://via.placeholder.com/185x278?text=No+Image';
-          const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`;
-          return `
-            <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
-              <img style="margin-bottom: 6px;" src="${profileImg}" alt="${actor.name}" loading="lazy" />
-              <p style="margin: 0; margin-bottom: 3px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">
-                ${actor.name}
-              </p>
-              <small>as ${actor.character}</small>
-            </div>
-          `;
-        }).join('')}
+            const profileImg = actor.profile_path
+              ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+              : 'https://via.placeholder.com/185x278?text=No+Image';
+            const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`;
+            return `
+              <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
+               <img style="margin-bottom: 6px;" src="${profileImg}" alt="${actor.name}" />
+                <p style="
+                  margin: 0; 
+                  margin-bottom: 3px; 
+                  line-height: 1.2; 
+                  white-space: nowrap; 
+                  overflow: hidden; 
+                  text-overflow: ellipsis;
+                  font-weight: bold;
+                ">${actor.name}</p>
+                <small>as ${actor.character}</small>
+              </div>
+            `;
+          }).join('')}
       </div>
     </div>
   `;
 }
 
+// Check if the movie is already in the favorites list
+function checkFavorite(id) {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  return favorites.some(movie => movie.id === id);
+}
+
+// Toggle favorite status for the movie
+function toggleFavorite(id, title, posterPath) {
+  const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  const index = favorites.findIndex(movie => movie.id === id);
+  if (index >= 0) {
+    favorites.splice(index, 1); // Remove from favorites
+  } else {
+    favorites.push({ id, title, posterPath }); // Add to favorites
+  }
+  localStorage.setItem('favorites', JSON.stringify(favorites));
+  updateFavoritesButton(id);
+}
+
+// Update the favorite button status dynamically
+function updateFavoritesButton(id) {
+  const button = document.querySelector(`[onclick="toggleFavorite(${id})"]`);
+  if (button) {
+    const isFavorite = checkFavorite(id);
+    button.classList.toggle('starred', isFavorite);
+    button.innerHTML = `<i class="fas fa-star"></i> ${isFavorite ? 'Favorited' : 'Add to Favorites'}`;
+  }
+}
+
+// Fetch similar movies
 async function fetchSimilarMovies(id) {
   const similarUrl = `https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}`;
-
   try {
     const res = await fetch(similarUrl);
     const data = await res.json();
@@ -332,6 +376,7 @@ async function fetchSimilarMovies(id) {
   }
 }
 
+// Display similar movies in the UI
 function displaySimilarMovies(movies) {
   const container = document.getElementById('movie-details');
   const similarSection = document.createElement('div');
@@ -351,7 +396,10 @@ function displaySimilarMovies(movies) {
           ${movies.filter(movie => movie.poster_path)
             .slice(0, 10)
             .map(movie => {
-              const posterUrl = `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
+              const posterUrl = movie.poster_path
+                ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
+                : 'https://via.placeholder.com/300x450?text=No+Image';  // Fallback image
+
               return `
                 <div class="similar-movie-item" onclick="location.href='./?id=${movie.id}'">
                   <img src="${posterUrl}" alt="${movie.title}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Image';">
@@ -374,6 +422,7 @@ function displaySimilarMovies(movies) {
   container.appendChild(similarSection);
 }
 
+// Handle slider scrolling
 function scrollSlider(direction) {
   const slider = document.querySelector('.similar-slider');
   const scrollAmount = 300;
@@ -383,15 +432,11 @@ function scrollSlider(direction) {
   });
 }
 
-// 🔄 Load both movie and similar movies in parallel
+// Initialize
 if (movieId) {
   showLoading();
-  Promise.all([
-    fetchMovieDetails(movieId),
-    fetchSimilarMovies(movieId)
-  ]).finally(() => {
-    setTimeout(hideLoading, 300); // small delay for smoother transition
+  fetchMovieDetails(movieId).then(() => {
+    fetchSimilarMovies(movieId);
+    hideLoading();
   });
 }
-
-
