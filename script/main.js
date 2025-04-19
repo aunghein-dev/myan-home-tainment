@@ -56,6 +56,8 @@ function displayMovies(movies, containerId) {
     movieItem.onclick = () => {
       window.location.href = `./detail/?id=${movie.id}`;
       searchInput.value = "";
+      clearIcon.style.opacity = 0;
+      clearFilter();
       //searchInput.focus();
     };
     gallery.appendChild(movieItem);
@@ -114,6 +116,8 @@ function displaySuggestions(suggestions) {
       suggestionItem.onclick = () => {
         window.location.href = `./detail/?id=${movie.id}`;
         searchInput.value = "";
+        clearIcon.style.opacity = 0;
+        clearFilter();
         //searchInput.focus();
       };
 
@@ -129,6 +133,8 @@ function displaySuggestions(suggestions) {
 export function viewAllMovies(category) {
   window.location.href = `./all/?category=${category}`;
   searchInput.value = "";
+  clearIcon.style.opacity = 0;
+  clearFilter();
   //searchInput.focus();
 }
 
