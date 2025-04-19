@@ -120,7 +120,7 @@
               class="fas fa-heart"
               style="color: #e63946; vertical-align: middle"
             ></i>
-            by <strong>MiniDev Tech Community</strong>
+            by <strong>minidev-ah Tech Community</strong>
           </p>
         </div>
       </footer>
@@ -165,19 +165,5 @@
       };
     </script>
 
-    <script>
-      const searchInput = document.getElementById("search-input");
-      const clearIcon = document.getElementById("clearIcon");
-
-      searchInput.addEventListener("input", () => {
-        clearIcon.style.opacity = searchInput.value.trim().length > 0 ? 1 : 0;
-      });
-
-      clearIcon.addEventListener("click", () => {
-        searchInput.value = "";
-        searchInput.focus();
-        clearIcon.style.opacity = 0;
-      });
-    </script>
   </body>
 </html>

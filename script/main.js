@@ -192,3 +192,24 @@ function showLoading() {
 function hideLoading() {
   loadingElement.style.display = 'none';
 }
+
+
+const clearIcon = document.getElementById("clearIcon");
+
+searchInput.addEventListener("input", () => {
+  clearIcon.style.opacity = searchInput.value.trim().length > 0 ? 1 : 0;
+});
+
+clearIcon.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
+  clearIcon.style.opacity = 0;
+  clearFilter();
+});
+
+
+function clearFilter() {
+  displayMovies(allMovies, 'popular-movies');
+  displayMovies(allMovies, 'top-rated-movies');
+  displayMovies(allMovies, 'upcoming-movies');
+}
