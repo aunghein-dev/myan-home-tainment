@@ -225,9 +225,9 @@ footer p {
 }
 
 .movie-poster {
-  max-height:400px;
-  object-fit:cover;
-  object-position:center;
+  max-height: 440px;
+  object-fit: cover;
+  object-position: center;
   width: 250px;
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
@@ -803,4 +803,27 @@ header {
 footer i.fa-heart {
   color: #e63946;
   margin: 0 4px;
+}
+
+/* Example Skeleton CSS */
+.skeleton .skeleton-poster {
+  width: 200px;
+  height: 300px;
+  background: #ccc;
+  border-radius: 10px;
+  animation: pulse 1.2s infinite;
+}
+.skeleton .line {
+  height: 12px;
+  background: #ccc;
+  border-radius: 5px;
+  margin: 10px 0;
+  animation: pulse 1.2s infinite;
+}
+.skeleton .short { width: 50%; }
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
 }

@@ -228,7 +228,7 @@ function hideLoading() {
   movieDetailsContainer.style.display = 'block';
 }
 
-// Fetch movie details and backend data
+// Fetch with timeout
 function fetchWithTimeout(url, options = {}, timeout = 5000) {
   return Promise.race([
     fetch(url, options),
@@ -238,28 +238,29 @@ function fetchWithTimeout(url, options = {}, timeout = 5000) {
   ]);
 }
 
+// Fetch movie details and backend data
 async function fetchMovieDetails(id) {
   const movieUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`;
   const downloadApiUrl = `https://mvlink-backend-webservice.onrender.com/mapi/secure-movie/${id}`;
 
   try {
-    const res = await fetchWithTimeout(movieUrl);
-    const movie = await res.json();
-    let encryptedLink = '';
-    try {
-      const backendRes = await fetchWithTimeout(downloadApiUrl);
-      if (backendRes.ok) {
-        const backendData = await backendRes.json();
-        encryptedLink = backendData.safeLink || '';
-      } else {
-        console.warn(`No backend data found for movie ${id} (Status: ${backendRes.status})`);
-      }
-    } catch (backendErr) {
-      console.error('Error fetching backend movie link:', backendErr);
-    }
+    const [movieRes, backendRes] = await Promise.allSettled([
+      fetchWithTimeout(movieUrl),
+      fetchWithTimeout(downloadApiUrl)
+    ]);
 
-    displayMovieDetails(movie, encryptedLink);
-    return movie;
+    const movie = movieRes.status === "fulfilled" ? await movieRes.value.json() : null;
+    const backendData = backendRes.status === "fulfilled" && backendRes.value.ok
+      ? await backendRes.value.json()
+      : {};
+    const encryptedLink = backendData.safeLink || '';
+
+    if (movie) {
+      displayMovieDetails(movie, encryptedLink);
+      return movie;
+    } else {
+      throw new Error("Movie not loaded");
+    }
   } catch (error) {
     console.error('Error loading movie details:', error);
     document.getElementById('movie-details').innerHTML = `
@@ -271,13 +272,12 @@ async function fetchMovieDetails(id) {
   }
 }
 
-// Display movie details in the UI
+// Display movie details
 function displayMovieDetails(movie, encryptedLink) {
   const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
   const poster = movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://via.placeholder.com/500x750?text=No+Image';
-  const backdrop = movie.backdrop_path ? `https://image.tmdb.org/t/p/original${movie.backdrop_path}` : 'https://via.placeholder.com/1920x800?text=No+Image';
-
   const topCast = movie.credits?.cast?.slice(0, 5) || [];
+
   const downloadButton = encryptedLink
     ? `<a href="../download-movie/?id=${movie.id}&key=${encodeURIComponent(encryptedLink)}" target="_blank" class="download-button"><i class="fa fa-download"></i> Download</a>`
     : `<a href="/report-link/?id=${movie.id}" class="download-button"><i class="fa fa-download"></i> Request Movie</a>`;
@@ -288,7 +288,6 @@ function displayMovieDetails(movie, encryptedLink) {
       <i class="fas fa-star"></i> ${isFavorite ? 'Favorited' : 'Add to Favorites'}
     </button>`;
 
-  // Update the movie details container
   movieDetailsContainer.innerHTML = `
     <div class="movie-content">
       <img src="${poster}" alt="${movie.title}" class="movie-poster" loading="lazy" />
@@ -310,51 +309,45 @@ function displayMovieDetails(movie, encryptedLink) {
       <h3>Top Cast</h3>
       <div class="cast-list">
         ${topCast.map(actor => {
-            const profileImg = actor.profile_path
-              ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
-              : 'https://via.placeholder.com/185x278?text=No+Image';
-            const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`;
-            return `
-              <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
-               <img style="margin-bottom: 6px;" src="${profileImg}" alt="${actor.name}" />
-                <p style="
-                  margin: 0; 
-                  margin-bottom: 3px; 
-                  line-height: 1.2; 
-                  white-space: nowrap; 
-                  overflow: hidden; 
-                  text-overflow: ellipsis;
-                  font-weight: bold;
-                ">${actor.name}</p>
-                <small>as ${actor.character}</small>
-              </div>
-            `;
-          }).join('')}
+          const profileImg = actor.profile_path
+            ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+            : 'https://via.placeholder.com/185x278?text=No+Image';
+          const googleSearchUrl = `https://www.google.com/search?q=${encodeURIComponent(actor.name)}`;
+          return `
+            <div class="cast-item" onclick="window.open('${googleSearchUrl}', '_blank')">
+              <img style="margin-bottom: 6px;" src="${profileImg}" alt="${actor.name}" />
+              <p style="margin: 0; margin-bottom: 3px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold;">
+                ${actor.name}
+              </p>
+              <small>as ${actor.character}</small>
+            </div>
+          `;
+        }).join('')}
       </div>
     </div>
   `;
 }
 
-// Check if the movie is already in the favorites list
+// Check favorites
 function checkFavorite(id) {
   const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   return favorites.some(movie => movie.id === id);
 }
 
-// Toggle favorite status for the movie
+// Toggle favorites
 function toggleFavorite(id, title, posterPath) {
   const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
   const index = favorites.findIndex(movie => movie.id === id);
   if (index >= 0) {
-    favorites.splice(index, 1); // Remove from favorites
+    favorites.splice(index, 1);
   } else {
-    favorites.push({ id, title, posterPath }); // Add to favorites
+    favorites.push({ id, title, posterPath });
   }
   localStorage.setItem('favorites', JSON.stringify(favorites));
   updateFavoritesButton(id);
 }
 
-// Update the favorite button status dynamically
+// Update favorite button state
 function updateFavoritesButton(id) {
   const button = document.querySelector(`[onclick="toggleFavorite(${id})"]`);
   if (button) {
@@ -376,7 +369,7 @@ async function fetchSimilarMovies(id) {
   }
 }
 
-// Display similar movies in the UI
+// Display similar movies
 function displaySimilarMovies(movies) {
   const container = document.getElementById('movie-details');
   const similarSection = document.createElement('div');
@@ -393,26 +386,21 @@ function displaySimilarMovies(movies) {
       <div class="slider-container">
         <button class="slider-btn left" onclick="scrollSlider('left')">&#10094;</button>
         <div class="similar-slider">
-          ${movies.filter(movie => movie.poster_path)
-            .slice(0, 10)
-            .map(movie => {
-              const posterUrl = movie.poster_path
-                ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-                : 'https://via.placeholder.com/300x450?text=No+Image';  // Fallback image
-
-              return `
-                <div class="similar-movie-item" onclick="location.href='./?id=${movie.id}'">
-                  <img src="${posterUrl}" alt="${movie.title}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Image';">
-                  <div class="similar-movie-info">
-                    <h4>
-                      <span class="movie-title-text">${movie.title}</span>
-                      <span class="span-info-year">(${new Date(movie.release_date).getFullYear()})</span>
-                    </h4>
-                    <p class="similar-movie-info-star">⭐ ${movie.vote_average.toFixed(1)}</p>
-                  </div>
+          ${movies.filter(movie => movie.poster_path).slice(0, 10).map(movie => {
+            const posterUrl = `https://image.tmdb.org/t/p/w300${movie.poster_path}`;
+            return `
+              <div class="similar-movie-item" onclick="location.href='./?id=${movie.id}'">
+                <img src="${posterUrl}" alt="${movie.title}" loading="lazy" onerror="this.onerror=null; this.src='https://via.placeholder.com/300x450?text=No+Image';">
+                <div class="similar-movie-info">
+                  <h4>
+                    <span class="movie-title-text">${movie.title}</span>
+                    <span class="span-info-year">(${new Date(movie.release_date).getFullYear()})</span>
+                  </h4>
+                  <p class="similar-movie-info-star">⭐ ${movie.vote_average.toFixed(1)}</p>
                 </div>
-              `;
-            }).join('')}
+              </div>
+            `;
+          }).join('')}
         </div>
         <button class="slider-btn right" onclick="scrollSlider('right')">&#10095;</button>
       </div>
@@ -422,7 +410,7 @@ function displaySimilarMovies(movies) {
   container.appendChild(similarSection);
 }
 
-// Handle slider scrolling
+// Slider scroll
 function scrollSlider(direction) {
   const slider = document.querySelector('.similar-slider');
   const scrollAmount = 300;
@@ -436,7 +424,7 @@ function scrollSlider(direction) {
 if (movieId) {
   showLoading();
   fetchMovieDetails(movieId).then(() => {
-    fetchSimilarMovies(movieId);
     hideLoading();
+    fetchSimilarMovies(movieId); // Load after movie info is visible
   });
 }
