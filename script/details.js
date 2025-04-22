@@ -7,7 +7,7 @@ const secretKey = 'p4E!x9z@1Lk#Vm$2RfT8GwQe^YhUjIoP';
 
 async function fetchMovieDetails(id) {
   const movieUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`;
-  const downloadApiUrl = `https://urgent-stacy-aunghein-dev-843d652b.koyeb.app/mapi/secure-movie/${id};`;
+  const downloadApiUrl = `https://standard-fredelia-aunghein-dev-4fce3106.koyeb.app/mapi/secure-movie/${id};`;
 
   try {
     const res = await fetch(movieUrl);
@@ -241,7 +241,7 @@ function fetchWithTimeout(url, options = {}, timeout = 5000) {
 // Fetch movie details and backend data
 async function fetchMovieDetails(id) {
   const movieUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&append_to_response=credits`;
-  const downloadApiUrl = `https://urgent-stacy-aunghein-dev-843d652b.koyeb.app/mapi/secure-movie/${id}`;
+  const downloadApiUrl = `https://standard-fredelia-aunghein-dev-4fce3106.koyeb.app/mapi/secure-movie/${id}`;
 
   try {
     const [movieRes, backendRes] = await Promise.allSettled([
