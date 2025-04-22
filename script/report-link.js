@@ -84,7 +84,7 @@ document.querySelector('.submit-button').addEventListener('click', async (event)
   };
 
   try {
-    const response = await fetch('https://mvlink-backend-webservice.onrender.com/linkbroken/create', {
+    const response = await fetch('https://urgent-stacy-aunghein-dev-843d652b.koyeb.app/linkbroken/create', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
